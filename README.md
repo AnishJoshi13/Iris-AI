@@ -3,6 +3,16 @@ ROUGH README
 this document is meant to define all instructions required to help you set up Iris AI on your desktop.
 Please follow all instructions carefully for a seamless experience.
 
+***
+
+<span class="highlight"> Highly Recommended to set up a new python virtual environment. Please keep all environment related files in the root directory of the project </span>
+<style>
+.highlight {
+  background-color: yellow;
+  color : black
+}
+</style>
+
 Installing Dependencies :
 - Run the following command to install all python dependencies. Make sure pip is installed.
 ```
