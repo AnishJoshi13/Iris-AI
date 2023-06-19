@@ -27,6 +27,9 @@ To achieve the installation, all you have to do is use these two steps on your t
 pip install pipwin
 pipwin install pyaudio
 ```
+
+Go to path *OpenAI_integration/secrets.py* and add your own API key.
+
 If this method doesn't work please refer https://stevemats.medium.com/solved-fix-pyaudio-pip-installation-errors-on-a-win-32-64-bit-operating-system-1efe6cd90c8d
 - [x] steps to successfully install pyaudio
 - [] reorganise it later
