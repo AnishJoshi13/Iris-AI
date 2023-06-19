@@ -1,18 +1,10 @@
-ROUGH README
+__Iris AI Installation Procedure__
+***
 
-this document is meant to define all instructions required to help you set up Iris AI on your desktop.
+This document is meant to define all instructions required to help you set up Iris AI on your desktop.
 Please follow all instructions carefully for a seamless experience.
 
-***
-<style>
-.highlight {
-  background-color: yellow;
-  color : black
-}
-</style>
-<span class="highlight"> Highly Recommended to set up a new python virtual environment. Please keep all environment related files in the root directory of the project </span>
-
-
+<kbd>**Note: Highly Recommended to set up a new python virtual environment. Please keep all environment related files in the root directory of the project**</kbd>
 Installing Dependencies :
 - Run the following command to install all python dependencies. Make sure pip is installed.
 ```
@@ -31,6 +23,3 @@ pipwin install pyaudio
 Go to path *OpenAI_integration/secrets.py* and add your own API key.
 
 If this method doesn't work please refer https://stevemats.medium.com/solved-fix-pyaudio-pip-installation-errors-on-a-win-32-64-bit-operating-system-1efe6cd90c8d
-- [x] steps to successfully install pyaudio
-- [] reorganise it later
-- [] add more details
