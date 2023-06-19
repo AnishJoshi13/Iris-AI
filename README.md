@@ -4,7 +4,7 @@ __Iris AI Installation Procedure__
 This document is meant to define all instructions required to help you set up Iris AI on your desktop.
 Please follow all instructions carefully for a seamless experience.
 
-<kbd>**Note: Highly Recommended to set up a new python virtual environment. Please keep all environment related files in the root directory of the project**</kbd>
+`Note: Highly Recommended to set up a new python virtual environment. Please keep all environment related files in the root directory of the project`
 Installing Dependencies :
 - Run the following command to install all python dependencies. Make sure pip is installed.
 ```
