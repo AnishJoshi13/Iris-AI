@@ -2,5 +2,5 @@
 /.idea
 requirements.txt
 OpenAI_integration/__pycache__/
-**/cache/
+*.cache
 
