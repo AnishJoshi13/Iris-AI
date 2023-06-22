@@ -23,8 +23,8 @@ def gpt_response(user_prompt):
 def intentExtraction(user_prompt):
     intent = openai.Completion.create(
         model="text-davinci-003",
-        prompt=f"determine the intent of the following sentence '{user_prompt}'\nprint the response as intent=intent",
-        temperature=0.5,
+        prompt=f"Read the complete sentence {user_prompt} and then determine the intent or action to be performed in the following sentence '{user_prompt}'\nprint the response as intent=intent",
+        temperature=0.3,
         max_tokens=256,
         top_p=1,
         frequency_penalty=0,
@@ -72,7 +72,7 @@ def recognizeUseCase(intent):
                 meanings.append("song")
             elif token.text in move_keywords:
                 similar_words.append(find_similar_words(move_keywords, token.text))
-                meanings.append("move")
+                meanings.append("motion")
 
         if similar_words:
             similar_words.sort(key=lambda x: x[1],
@@ -83,6 +83,10 @@ def recognizeUseCase(intent):
                     return dance
                 elif meaning == "song":
                     return song
+                elif meaning == "motion":
+                    return move
+                else:
+                    return gpt_response
         else:
             return gpt_response
 
@@ -131,21 +135,66 @@ def extractSongDetails(song_prompt):
     return song_details
 
 
+def intent_preprocess(text):
+    start_index = text.find("intent=")
+    if start_index == -1:
+        return None
+
+    start_index += len("intent=")
+    end_index = text.find(" ", start_index)
+
+    if end_index == -1:
+        intent = text[start_index:]
+    else:
+        intent = text[start_index:end_index]
+
+    return intent
+
+
 def song(name, time=30):
     print(f"playing song {name} for {time} seconds")
 
 
-def dance(name, time):
-    song(name, time)
+def dance():
+    print("dancing like a pro")
+
+def move():
+    print("robot is moving")
 
 
 if __name__ == '__main__':
-    user_prompt = "Music is bliss"
-    intent = intentExtraction(user_prompt)
-    print(intent)
-    functionToBeCalled = recognizeUseCase(intent)
-    if functionToBeCalled == song:
-        name, time = extractSongDetails(user_prompt)
-        song(name, time)
-    if functionToBeCalled == gpt_response:
-        gpt_response(user_prompt)
+    prompts = [
+        "Move forward by 10 meters.",
+        "Rotate 90 degrees to the left.",
+        "Jump three times in a row.",
+        "Walk in a zigzag pattern.",
+        "Perform a somersault.",
+        "Hop on one leg for 30 seconds.",
+        "Crawl like a spider on the floor.",
+        "Balance on one foot for as long as possible.",
+        "Dance to your favorite song.",
+        "Run in a circle around the room."
+    ]
+
+    for prompt in prompts:
+        print(prompt)
+        user_prompt = prompt
+        intent = intentExtraction(user_prompt)
+        intent = intent_preprocess(intent)
+        if intent is None:
+            print("Response : ", end='')
+            print(gpt_response(user_prompt))
+        else:
+            print("intent =", intent)
+            print("Response : ", end='')
+            functionToBeCalled = recognizeUseCase(intent)
+            if functionToBeCalled == song:
+                name, time = extractSongDetails(user_prompt)
+                song(name, time)
+            if functionToBeCalled == dance:
+                dance()
+            if functionToBeCalled == move:
+                move()
+            if functionToBeCalled == gpt_response:
+                print(gpt_response(user_prompt))
+        print()
