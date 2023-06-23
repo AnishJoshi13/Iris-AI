@@ -23,8 +23,8 @@ def gpt_response(user_prompt):
 def intentExtraction(user_prompt):
     intent = openai.Completion.create(
         model="text-davinci-003",
-        prompt=f"Read the complete sentence {user_prompt} and then determine the intent or action to be performed in the following sentence '{user_prompt}'\nprint the response as intent=intent",
-        temperature=0.3,
+        prompt=f"Read the complete sentence {user_prompt} and then determine the intent or action to be performed\nprint the response as intent=intent",
+        temperature=0.1,
         max_tokens=256,
         top_p=1,
         frequency_penalty=0,
@@ -165,10 +165,14 @@ def move():
 if __name__ == '__main__':
     prompts = [
         "Move forward by 10 meters.",
+        "Play a song for square root of 64 seconds.",
         "Rotate 90 degrees to the left.",
+        "Dance with me",
         "Jump three times in a row.",
+        "Can we sway to the music as dance partners",
         "Walk in a zigzag pattern.",
         "Perform a somersault.",
+        "Play believer by Imagine Dragons",
         "Hop on one leg for 30 seconds.",
         "Crawl like a spider on the floor.",
         "Balance on one foot for as long as possible.",
