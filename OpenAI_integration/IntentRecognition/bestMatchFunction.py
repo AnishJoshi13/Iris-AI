@@ -2,6 +2,7 @@ import openai
 import re
 from OpenAI_integration.secrets import MY_API_KEY
 from src.intentExtractWithoutSpacy import intentExtraction
+from src.Robo_Functions.Motion_functions import *
 
 openai.api_key = MY_API_KEY
 
@@ -114,32 +115,7 @@ def dance():
     print("dancing like a pro")
 
 
-def move():
-    print("robot is moving")
 
-
-def moveForward():
-    print("Moving forward function")
-
-
-def moveBackward():
-    print("Moving backwards function")
-
-
-def rotate():
-    print("Rotating function")
-
-
-def moveHand1():
-    print("Moving hand one (Left hand) function")
-
-
-def moveHand2():
-    print("Moving hand 2 (right hand) function")
-
-
-def movementCombo():
-    print("Moving in combination function")
 
 
 if __name__ == '__main__':
