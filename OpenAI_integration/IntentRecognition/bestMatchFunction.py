@@ -4,22 +4,9 @@ from OpenAI_integration.secrets import MY_API_KEY
 from src.intentExtractWithoutSpacy import intentExtraction
 from src.Robo_Functions.Motion_functions import *
 from src.Robo_Functions.Groove_Functions import *
+from src.Robo_Functions.Iris_Chat import *
 
 openai.api_key = MY_API_KEY
-
-
-def gpt_response(user_prompt):
-    std_gpt_response = openai.Completion.create(
-        model="text-davinci-003",
-        prompt=user_prompt,
-        temperature=.9,
-        max_tokens=256,
-        top_p=1,
-        frequency_penalty=0,
-        presence_penalty=0
-    )
-    return std_gpt_response["choices"][0]["text"]
-
 
 # Define the list of predefined functions
 predefined_functions = {
@@ -37,10 +24,7 @@ predefined_functions = {
 if __name__ == '__main__':
     sentences = [
 
-        "play the song fairytale by alexander rybaks for 100 seconds and dance",
-        "dance on your favorite song",
-        "play song for squae root of 64 seconds",
-        "What is arduino UNO"
+        "By investing in renewable energy sources, we can create a cleaner and more sustainable future for generations to come."
 
     ]
 
@@ -92,9 +76,14 @@ if __name__ == '__main__':
                     movementCombo()
 
                 elif extracted_funcList == "chat":
-                    print(gpt_response(processed_sentence))
+                    preprocess_tone = gpt_response_preprocessing(processed_sentence).lower()
+                    chat_response = gpt_response(processed_sentence, preprocess_tone)
+                    print(chat_response)
+
                 else:
-                    print(gpt_response(processed_sentence))
+                    preprocess_tone = gpt_response_preprocessing(processed_sentence).lower()
+                    chat_response = gpt_response(processed_sentence, preprocess_tone)
+                    print(chat_response)
 
         except (ValueError, SyntaxError):
             print("Invalid intent response format.")
