@@ -3,4 +3,5 @@
 requirements.txt
 OpenAI_integration/__pycache__/
 *.cache
+__pycache__/
 

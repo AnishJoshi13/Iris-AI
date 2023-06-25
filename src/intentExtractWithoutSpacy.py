@@ -50,21 +50,22 @@ predefined_functions = {
     "chat()"
 }
 
-# Loop over each sentence and check the response
-for sentence in sentences:
-    print(sentence)
-    sentence = intentExtraction(sentence)
-    # Construct the prompt
-    prompt = f"from the given input {sentence}. Analyze the intent and action to identify the best matching function from {predefined_functions}. Your response should print(best matching function) otherwise print(no function matched) "
+if __name__ == '__main__':
+    # Loop over each sentence and check the response
+    for sentence in sentences:
+        print(sentence)
+        sentence = intentExtraction(sentence)
+        # Construct the prompt
+        prompt = f"from the given input {sentence}. Analyze the intent and action to identify the best matching function from {predefined_functions}. Your response should print(best matching function) otherwise print(no function matched) "
 
-    # Generate the response using GPT-3 model
-    response = openai.Completion.create(
-        engine="text-davinci-003",
-        prompt=prompt,
-        max_tokens=10,
-        n=1,
-        temperature=0.3
-    )
+        # Generate the response using GPT-3 model
+        response = openai.Completion.create(
+            engine="text-davinci-003",
+            prompt=prompt,
+            max_tokens=10,
+            n=1,
+            temperature=0.3
+        )
 
-    print(response["choices"][0]["text"])
-    print()
+        print(response["choices"][0]["text"])
+        print()

@@ -1,8 +1,7 @@
 import openai
-import spacy
-import numpy as np
-from sklearn.metrics.pairwise import cosine_similarity
+import re
 from OpenAI_integration.secrets import MY_API_KEY
+from src.intentExtractWithoutSpacy import intentExtraction
 
 openai.api_key = MY_API_KEY
 
@@ -20,83 +19,23 @@ def gpt_response(user_prompt):
     return std_gpt_response["choices"][0]["text"]
 
 
-def intentExtraction(user_prompt):
-    intent = openai.Completion.create(
-        model="text-davinci-003",
-        prompt=f"Read the complete sentence {user_prompt} and then determine the intent or action to be performed\nprint the response as intent=intent",
-        temperature=0.1,
-        max_tokens=256,
-        top_p=1,
-        frequency_penalty=0,
-        presence_penalty=0
-    )
-    return intent["choices"][0]["text"]
-
-
-def recognizeUseCase(intent):
-    nlp = spacy.load('en_core_web_md')
-    dance_keywords = ["dance", "dancing", "dancer", "ballet", "choreography", "perform", "rhythm"]
-    song_keywords = ["sing", "song", "singing", "singer", "melody", "vocal", "music", "musical", "tune"]
-    move_keywords = ["move", "moving", "mover", "motion", "action", "gesture", "step"]
-
-    def get_embedding(word):
-        # Used to find similar words from the given dataset
-        return nlp.vocab[word].vector.reshape(1, -1)
-
-    def find_similar_words(keyword_list, word):
-        word_embedding = get_embedding(word)
-        similarities = []  # Empty list to store similarity score
-
-        for keyword in keyword_list:  # Iterating over all the words of the sentence
-            keyword_embedding = get_embedding(keyword)
-            similarity = cosine_similarity(word_embedding, keyword_embedding)  # Generating the similarity score
-            similarities.append(similarity)  # Storing the score
-
-        max_similarity_index = np.argmax(similarities)  # Gives the maximum value index
-        max_similarity = similarities[max_similarity_index]  # Getting the maximum value
-        similar_word = keyword_list[max_similarity_index]  # Retrieving the most similar word
-
-        return similar_word, max_similarity
-
-    def process_sentence(sentence):
-        doc = nlp(sentence.lower())
-        similar_words = []  # Will contain most similar words with similarity score
-        meanings = []  # Will store the meaning associated with the similar word (song, dance, move)
-
-        for token in doc:  # Iterating on every list if it matches then its belong to that list
-            if token.text in dance_keywords:
-                similar_words.append(find_similar_words(dance_keywords, token.text))
-                meanings.append("dance")
-            elif token.text in song_keywords:
-                similar_words.append(find_similar_words(song_keywords, token.text))
-                meanings.append("song")
-            elif token.text in move_keywords:
-                similar_words.append(find_similar_words(move_keywords, token.text))
-                meanings.append("motion")
-
-        if similar_words:
-            similar_words.sort(key=lambda x: x[1],
-                               reverse=True)  # Sorting the list in decending order based on similarity score
-            selected_meanings = set(meanings)  # Storing unique values
-            for meaning in selected_meanings:  # Iterating the set and calling the function
-                if meaning == "dance":
-                    return dance
-                elif meaning == "song":
-                    return song
-                elif meaning == "motion":
-                    return move
-                else:
-                    return gpt_response
-        else:
-            return gpt_response
-
-    func = process_sentence(intent)
-    return func
+# Define the list of predefined functions
+predefined_functions = {
+    "dance",
+    "moveForward",
+    "moveBackward",
+    "rotate",
+    "moveHand1",
+    "moveHand2",
+    "movementCombo",
+    "sing",
+    "chat"
+}
 
 
 def extractSongDetails(song_prompt):
     default_time = 60
-    default_song = "gaadi wala aya ghar se kachra nikal"
+    default_song = "believer"
     song_details = []
     extract_song = f"extract the song name from the given {song_prompt} and print(song_name = song_name) otherwise print {default_song}"
     song_response = openai.Completion.create(
@@ -125,13 +64,19 @@ def extractSongDetails(song_prompt):
     start_index = input_string.find("\"") + 1
     end_index = input_string.rfind("\"")
     nameOfSong = input_string[start_index:end_index]
+    if not nameOfSong:
+        nameOfSong = default_song
     song_details.append(nameOfSong)
+
     input_string = time_response["choices"][0]["text"]
-    start_index = input_string.find("=") + 1
-    end_index = input_string.find(";")
-    value_string = input_string[start_index:end_index].strip()
-    t = int(value_string)
+    t_match = re.search(r"time = (\d+)", input_string)
+    if t_match:
+        t = int(t_match.group(1))
+    else:
+        t = default_time
     song_details.append(t)
+    # print(t)
+
     return song_details
 
 
@@ -151,54 +96,113 @@ def intent_preprocess(text):
     return intent
 
 
-def song(name, time=30):
-    print(f"playing song {name} for {time} seconds")
+def play_song(name, time):
+    print(f"Playing song {name} for {time} seconds")
+
+
+def sing_song(sentence):
+    print("Singing a song")
+    song_detail = extractSongDetails(sentence)
+    if song_detail:
+        song_name = song_detail[0]
+        song_time = song_detail[1]
+        play_song(song_name, song_time)
 
 
 def dance():
+    sing_song(processed_sentence)
     print("dancing like a pro")
+
 
 def move():
     print("robot is moving")
 
 
+def moveForward():
+    print("Moving forward function")
+
+
+def moveBackward():
+    print("Moving backwards function")
+
+
+def rotate():
+    print("Rotating function")
+
+
+def moveHand1():
+    print("Moving hand one (Left hand) function")
+
+
+def moveHand2():
+    print("Moving hand 2 (right hand) function")
+
+
+def movementCombo():
+    print("Moving in combination function")
+
+
 if __name__ == '__main__':
-    prompts = [
-        "Move forward by 10 meters.",
-        "Play a song for square root of 64 seconds.",
-        "Rotate 90 degrees to the left.",
-        "Dance with me",
-        "Jump three times in a row.",
-        "Can we sway to the music as dance partners",
-        "Walk in a zigzag pattern.",
-        "Perform a somersault.",
-        "Play believer by Imagine Dragons",
-        "Hop on one leg for 30 seconds.",
-        "Crawl like a spider on the floor.",
-        "Balance on one foot for as long as possible.",
-        "Dance to your favorite song.",
-        "Run in a circle around the room."
+    sentences = [
+
+        "play the song fairytale by alexander rybaks for 100 seconds and dance",
+        "dance on your favorite song",
+        "play song for squae root of 64 seconds",
+        "What is arduino UNO"
+
     ]
 
-    for prompt in prompts:
-        print(prompt)
-        user_prompt = prompt
-        intent = intentExtraction(user_prompt)
-        intent = intent_preprocess(intent)
-        if intent is None:
-            print("Response : ", end='')
-            print(gpt_response(user_prompt))
-        else:
-            print("intent =", intent)
-            print("Response : ", end='')
-            functionToBeCalled = recognizeUseCase(intent)
-            if functionToBeCalled == song:
-                name, time = extractSongDetails(user_prompt)
-                song(name, time)
-            if functionToBeCalled == dance:
+# Loop over each sentence and check the response
+for processed_sentence in sentences:
+    print(processed_sentence)
+    sentence = intentExtraction(processed_sentence)
+    # Construct the prompt
+    prompt = f"from the given input {sentence}. Analyze the intent and action to identify the best matching function from {predefined_functions}. Your response should return the list of (best matching function) otherwise return chat"
+
+    # Generate the response using GPT-3 model
+    response = openai.Completion.create(
+        engine="text-davinci-003",
+        prompt=prompt,
+        max_tokens=10,
+        n=1,
+        temperature=0.1
+    )
+
+    intent_response = response["choices"][0]["text"]
+    intent_list = intent_response.split(",")  # Split the string into a list
+    print(intent_list)
+    try:
+        for extracted_funcList in intent_list:
+            extracted_funcList = extracted_funcList.strip().strip("'").lower()
+            print(extracted_funcList)
+            if extracted_funcList == "dance":
                 dance()
-            if functionToBeCalled == move:
-                move()
-            if functionToBeCalled == gpt_response:
-                print(gpt_response(user_prompt))
-        print()
+
+            elif extracted_funcList == "song" or extracted_funcList == "sing":
+                sing_song(processed_sentence)
+
+            elif extracted_funcList == "moveforward":
+                moveForward()
+
+            elif extracted_funcList == "movebackward":
+                moveBackward()
+
+            elif extracted_funcList == "rotate":
+                rotate()
+
+            elif extracted_funcList == "movehand1":
+                moveHand1()
+
+            elif extracted_funcList == "movehand2":
+                moveHand2()
+
+            elif extracted_funcList == "movementcombo":
+                movementCombo()
+
+            elif extracted_funcList == "chat":
+                print(gpt_response(processed_sentence))
+            else:
+                print(gpt_response(processed_sentence))
+
+    except (ValueError, SyntaxError):
+        print("Invalid intent response format.")
