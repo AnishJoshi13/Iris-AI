@@ -5,6 +5,7 @@ from src.intentExtractWithoutSpacy import intentExtraction
 from src.Robo_Functions.Motion_functions import *
 from src.Robo_Functions.Groove_Functions import *
 from src.Robo_Functions.Iris_Chat import *
+from src.Robo_Functions.Face_Detection import *
 
 openai.api_key = MY_API_KEY
 
@@ -18,13 +19,14 @@ predefined_functions = {
     "moveHand2",
     "movementCombo",
     "sing",
-    "chat"
+    "chat",
+    "recognise_me"
 }
 
 if __name__ == '__main__':
     sentences = [
 
-        "By investing in renewable energy sources, we can create a cleaner and more sustainable future for generations to come."
+        "start face detection"
 
     ]
 
@@ -74,6 +76,9 @@ if __name__ == '__main__':
 
                 elif extracted_funcList == "movementcombo":
                     movementCombo()
+
+                elif extracted_funcList == "recognise_me":
+                    recognize_faces()
 
                 elif extracted_funcList == "chat":
                     preprocess_tone = gpt_response_preprocessing(processed_sentence).lower()
